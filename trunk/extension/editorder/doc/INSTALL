@@ -1,0 +1,64 @@
+Innoteam editorder extension v. 1.0 INSTALL
+
+Caveat
+======
+This extension was developed and tested on eZPublish 4.3. There is no guarantee it works on older version.
+Since it messes with the database, be careful.
+
+Installing editorder extension
+==============================================
+
+1. Put the package content into the `extension' directory in the root of your eZ publish installation.
+
+2. You must now enable the extension in eZ publish. To do this edit site.ini.append(.php) in the 
+   folder root_of_ezpublish/settings. If this file does not exist; create it. Locate (or add)
+   the block [ExtensionSettings] and add the line:
+   ActiveExtensions[]=editorder
+
+   If you run several sites using only one distribution and only some of the sites should use
+   the extension, make the changes in the override file of that siteaccess. 
+   E.g root_of_ezpublish/settings/siteaccess/news/site.ini.append(.php)
+   But instead of using ActiveExtensions you must add these lines instead:
+
+   [ExtensionSettings]
+   ActiveAccessExtensions[]=editorder
+   
+3. Set the permission for module editorder and function edit for the user(s) and/or the users group(s) you 
+   want allow to use it. 
+   
+Options
+=======
+1. To let maintenance be easier, editorder override the orderlist.tpl, with an identical version that 
+   finds out the groups the user currently logged in belongs searching the settings/content.ini.append.php 
+   for a specific object ID under the UserGroups setting:
+   
+   {let $receptionistsID = ezini('UserGroups', 'ReceptionistsObjectID', 'content.ini.append.php')}
+   
+   and use it to activate a tiny control in order to decide to link the orders to the default view (orderview.tpl) 
+   or to the edit view (edit.tpl). 
+   
+   {if $current_user.groups|contains($receptionistsID)}
+   		{concat("/editorder/edit/", $Orders.item.id,"/")|ezurl}
+   {else}
+		{concat( '/shop/orderview/', $Orders.item.id, '/' )|ezurl}
+   {/if}
+    			
+   If you want to avoid this, simply delete the control and the previous call and let anybody access the page 
+   called by /editorder/edit/orderID.
+   
+   In a similar way, if you want to let more groups or more users access the page, add multiple UserGroups and/or
+   Users and edit the control accordingly.
+
+2. The extension was requested having a particular list of nations, that are stored into settings/country.ini and 
+   are used by the template /templates/shop/country/edit.tpl to list the countries. 
+   If you want to use the default template, simply delete the folder. The eZPublish fallback templates system will 
+   take care of showing the default list.
+
+Troubleshooting
+===============.
+
+1. Support
+   -------
+
+   If you have find any problems or you have questions not handled by this document you
+   can contact Innoteam at http://www.innoteam.it or me at monica.giambitto@innoteam.it
